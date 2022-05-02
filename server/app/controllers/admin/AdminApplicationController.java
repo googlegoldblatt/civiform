@@ -86,7 +86,8 @@ public class AdminApplicationController extends CiviFormController {
       return unauthorized();
     }
 
-    String filename = String.format("%s-%s.json", program.adminName(), LocalDateTime.now(clock).toString());
+    String filename =
+        String.format("%s-%s.json", program.adminName(), LocalDateTime.now(clock).toString());
     String json = jsonExporter.export(program);
 
     return ok(json)
@@ -100,7 +101,8 @@ public class AdminApplicationController extends CiviFormController {
     try {
       ProgramDefinition program = programService.getProgramDefinition(programId);
       checkProgramAdminAuthorization(profileUtils, request, program.adminName()).join();
-      String filename = String.format("%s-%s.csv", program.adminName(), LocalDateTime.now(clock).toString());
+      String filename =
+          String.format("%s-%s.csv", program.adminName(), LocalDateTime.now(clock).toString());
       String csv = exporterService.getProgramAllVersionsCsv(programId);
       return ok(csv)
           .as(Http.MimeTypes.BINARY)
@@ -122,7 +124,8 @@ public class AdminApplicationController extends CiviFormController {
     try {
       ProgramDefinition program = programService.getProgramDefinition(programId);
       checkProgramAdminAuthorization(profileUtils, request, program.adminName()).join();
-      String filename = String.format("%s-%s.csv", program.adminName(), LocalDateTime.now(clock).toString());
+      String filename =
+          String.format("%s-%s.csv", program.adminName(), LocalDateTime.now(clock).toString());
       String csv = exporterService.getProgramCsv(programId);
       return ok(csv)
           .as(Http.MimeTypes.BINARY)
