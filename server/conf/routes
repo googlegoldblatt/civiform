@@ -88,7 +88,7 @@ GET     /admin/demographics                                               contro
 # Admin API key management
 GET     /admin/apiKeys                              controllers.admin.AdminApiKeysController.index()
 GET     /admin/apiKeys/new                          controllers.admin.AdminApiKeysController.newOne(request: Request)
-POST    /admin/apiKeys                              controllers.admin.AdminApiKeysController.create()
+POST    /admin/apiKeys                              controllers.admin.AdminApiKeysController.create(request: Request)
 
 # Controller for admins and applicants to access applicants' uploaded files
 GET     /admin/programs/:programId/files/:fileKey   controllers.FileController.adminShow(request: Request, programId: Long, fileKey: String)

@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import j2html.tags.ContainerTag;
+import play.data.DynamicForm;
 import play.mvc.Http.Request;
 import play.twirl.api.Content;
 import views.BaseHtmlView;
@@ -21,13 +22,14 @@ import views.components.FieldWithLabel;
 /** Renders a page for adding a new ApiKey. */
 public final class ApiKeyNewOneView extends BaseHtmlView {
   private final AdminLayout layout;
+  private final Slugify slugifier = new Slugify();
 
   @Inject
   public ApiKeyNewOneView(AdminLayout layout) {
     this.layout = checkNotNull(layout);
   }
 
-  public Content render(Request request, ImmutableSet<String> programNames) {
+  public Content render(Request request, DynamicForm form, ImmutableSet<String> programNames) {
     String title = "Create a new API key";
 
     ContainerTag formTag =
@@ -47,13 +49,12 @@ public final class ApiKeyNewOneView extends BaseHtmlView {
 
     formTag.with(h2("Allowed programs"), p("Select the programs this key grants read access to."));
 
-    Slugify slugifier = new Slugify();
-
     for (String name : programNames.stream().sorted().collect(ImmutableList.toImmutableList())) {
       formTag.with(
           FieldWithLabel.checkbox()
-              .setFieldName(slugifier.slugify(name))
+              .setFieldName(programReadGrantFieldName(name))
               .setLabelText(name)
+              .setValue("true")
               .getContainer());
     }
 
@@ -67,5 +68,9 @@ public final class ApiKeyNewOneView extends BaseHtmlView {
         layout.getBundle().setTitle(title).addMainContent(renderHeader(title), contentDiv);
 
     return layout.renderCentered(htmlBundle);
+  }
+
+  private String programReadGrantFieldName(String name) {
+    return "grant-program-read[" + slugifier.slugify(name) + "]";
   }
 }
