@@ -105,8 +105,8 @@ public class ProgramServiceImpl implements ProgramService {
   }
 
   @Override
-  public ImmutableList<String> getAllProgramSlugs() {
-    return programRepository.getAllSlugs();
+  public ImmutableSet<String> getAllProgramNames() {
+    return getActiveAndDraftPrograms().getProgramNames();
   }
 
   @Override

@@ -30,7 +30,7 @@ public class AdminApiKeysController extends CiviFormController {
 
   @Secure(authorizers = Authorizers.Labels.CIVIFORM_ADMIN)
   public Result newOne(Http.Request request) {
-    return ok(newOneView.render(request, programService.getAllProgramSlugs()));
+    return ok(newOneView.render(request, programService.getAllProgramNames()));
   }
 
   @Secure(authorizers = Authorizers.Labels.CIVIFORM_ADMIN)
