@@ -50,58 +50,58 @@ public class ProgramFormBuilder extends BaseHtmlView {
       String externalLink,
       String displayMode,
       boolean editExistingProgram) {
-    return form()
-        .withMethod("POST")
-        .with(
-            h2("Internal program information"),
-            h3("This will only be visible to administrators"),
-            FieldWithLabel.input()
-                .setId("program-name-input")
-                .setFieldName("adminName")
-                .setLabelText("Enter internal name or nickname of this program")
-                .setValue(adminName)
-                .setDisabled(editExistingProgram)
-                .getContainer(),
-            FieldWithLabel.textArea()
-                .setId("program-description-textarea")
-                .setFieldName("adminDescription")
-                .setLabelText("Describe this program for administrative use")
-                .setValue(adminDescription)
-                .getContainer(),
-            FieldWithLabel.radio()
-                .setId("program-display-mode-public")
-                .setFieldName("displayMode")
-                .setLabelText("Public")
-                .setValue(DisplayMode.PUBLIC.getValue())
-                .setChecked(displayMode.equals(DisplayMode.PUBLIC.getValue()))
-                .getContainer(),
-            FieldWithLabel.radio()
-                .setId("program-display-mode-hidden")
-                .setFieldName("displayMode")
-                .setLabelText("Hidden in Index")
-                .setValue(DisplayMode.HIDDEN_IN_INDEX.getValue())
-                .setChecked(displayMode.equals(DisplayMode.HIDDEN_IN_INDEX.getValue()))
-                .getContainer(),
-            h2("Public program information"),
-            h3("This will be visible to the public"),
-            FieldWithLabel.input()
-                .setId("program-display-name-input")
-                .setFieldName("localizedDisplayName")
-                .setLabelText("Enter the publicly displayed name for this program")
-                .setValue(displayName)
-                .getContainer(),
-            FieldWithLabel.textArea()
-                .setId("program-display-description-textarea")
-                .setFieldName("localizedDisplayDescription")
-                .setLabelText("Describe this program for the public")
-                .setValue(displayDescription)
-                .getContainer(),
-            FieldWithLabel.input()
-                .setId("program-external-link-input")
-                .setFieldName("externalLink")
-                .setLabelText("Link for additional program information")
-                .setValue(externalLink)
-                .getContainer(),
-            submitButton("Save").withId("program-update-button"));
+    ContainerTag formTag = form().withMethod("POST");
+    formTag.with(
+        h2("Internal program information"),
+        h3("This will only be visible to administrators"),
+        FieldWithLabel.input()
+            .setId("program-name-input")
+            .setFieldName("adminName")
+            .setLabelText("Enter internal name or nickname of this program")
+            .setValue(adminName)
+            .setDisabled(editExistingProgram)
+            .getContainer(),
+        FieldWithLabel.textArea()
+            .setId("program-description-textarea")
+            .setFieldName("adminDescription")
+            .setLabelText("Describe this program for administrative use")
+            .setValue(adminDescription)
+            .getContainer(),
+        FieldWithLabel.radio()
+            .setId("program-display-mode-public")
+            .setFieldName("displayMode")
+            .setLabelText("Public")
+            .setValue(DisplayMode.PUBLIC.getValue())
+            .setChecked(displayMode.equals(DisplayMode.PUBLIC.getValue()))
+            .getContainer(),
+        FieldWithLabel.radio()
+            .setId("program-display-mode-hidden")
+            .setFieldName("displayMode")
+            .setLabelText("Hidden in Index")
+            .setValue(DisplayMode.HIDDEN_IN_INDEX.getValue())
+            .setChecked(displayMode.equals(DisplayMode.HIDDEN_IN_INDEX.getValue()))
+            .getContainer(),
+        h2("Public program information"),
+        h3("This will be visible to the public"),
+        FieldWithLabel.input()
+            .setId("program-display-name-input")
+            .setFieldName("localizedDisplayName")
+            .setLabelText("Enter the publicly displayed name for this program")
+            .setValue(displayName)
+            .getContainer(),
+        FieldWithLabel.textArea()
+            .setId("program-display-description-textarea")
+            .setFieldName("localizedDisplayDescription")
+            .setLabelText("Describe this program for the public")
+            .setValue(displayDescription)
+            .getContainer(),
+        FieldWithLabel.input()
+            .setId("program-external-link-input")
+            .setFieldName("externalLink")
+            .setLabelText("Link for additional program information")
+            .setValue(externalLink)
+            .getContainer(),
+        submitButton("Save").withId("program-update-button"));
+    return formTag;
   }
 }
