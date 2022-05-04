@@ -76,7 +76,7 @@ public class ApiKeyService {
 
     apiKey.setKeyId(keyId);
     apiKey.setSaltedKeySecret(saltedSecret);
-    apiKey.setCreatedBy(profile.getAuthorityId().join());
+    apiKey.setCreatedBy(getAuthorityId(profile));
 
     apiKey = repository.insert(apiKey).toCompletableFuture().join();
 
@@ -185,6 +185,20 @@ public class ApiKeyService {
     HashCode saltedMessage = hashFunction.hashBytes(rawMessage);
 
     return Base64.getEncoder().encodeToString(saltedMessage.asBytes());
+  }
+
+  private String getAuthorityId(CiviFormProfile profile) {
+    String authorityId = profile.getAuthorityId().join();
+
+    if (authorityId != null) {
+      return authorityId;
+    }
+
+    if (environment.isDev()) {
+      return "dev-admin";
+    }
+
+    throw new RuntimeException("ApiKey creator must have authority_id.");
   }
 
   public static class ApiKeyMutationResult {
