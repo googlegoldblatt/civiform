@@ -10,7 +10,6 @@ import io.ebean.Database;
 import io.ebean.ExpressionList;
 import io.ebean.PagedList;
 import io.ebean.Query;
-import io.ebean.SqlRow;
 import io.ebean.Transaction;
 import io.ebean.TxScope;
 import java.util.List;
@@ -188,18 +187,6 @@ public class ProgramRepository {
         .findList()
         .stream()
         .collect(ImmutableList.toImmutableList());
-  }
-
-  /** List all distinct program slugs. */
-  public ImmutableList<String> getAllSlugs() {
-    List<SqlRow> rows = database.sqlQuery("SELECT DISTINCT slug FROM programs").findList();
-    ImmutableList.Builder<String> slugs = ImmutableList.builder();
-
-    for (SqlRow row : rows) {
-      slugs.add(row.getString("slug"));
-    }
-
-    return slugs.build();
   }
 
   /**
