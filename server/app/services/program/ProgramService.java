@@ -344,4 +344,7 @@ public interface ProgramService {
 
   /** Get the names for all programs. */
   ImmutableSet<String> getAllProgramNames();
+
+  /** Get the slugs for all programs. */
+  ImmutableSet<String> getAllProgramSlugs();
 }

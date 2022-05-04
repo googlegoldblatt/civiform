@@ -14,6 +14,7 @@ import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import services.apikey.ApiKeyService;
+import services.program.ProgramNotFoundException;
 import services.program.ProgramService;
 import views.admin.programs.ApiKeyNewOneView;
 
@@ -60,10 +61,14 @@ public class AdminApiKeysController extends CiviFormController {
 
     DynamicForm form = formFactory.form().bindFromRequest(request);
 
-    apiKeyService.createApiKey(form, profile.get());
+    try {
+      apiKeyService.createApiKey(form, profile.get());
+    } catch (ProgramNotFoundException e) {
+      return notFound(e.toString());
+    }
 
     if (form.hasErrors()) {
-      return ok();
+      return badRequest();
       // return badRequest(newOneView.render(request, form, programService.getAllProgramNames()));
     }
 

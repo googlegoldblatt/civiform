@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import auth.ApiKeyGrants.Permission;
 import auth.CiviFormProfile;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -12,9 +13,6 @@ import com.typesafe.config.Config;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
 import java.util.Optional;
@@ -26,6 +24,9 @@ import org.apache.commons.net.util.SubnetUtils;
 import play.Environment;
 import play.data.DynamicForm;
 import repository.ApiKeyRepository;
+import services.DateConverter;
+import services.program.ProgramNotFoundException;
+import services.program.ProgramService;
 
 public class ApiKeyService {
 
@@ -33,17 +34,24 @@ public class ApiKeyService {
   private static final int KEY_SECRET_LENGTH = 256;
 
   private final Environment environment;
+  private final ProgramService programService;
   private final ApiKeyRepository repository;
   private final String secretSalt;
 
   @Inject
-  public ApiKeyService(ApiKeyRepository repository, Environment environment, Config config) {
+  public ApiKeyService(
+      ApiKeyRepository repository,
+      Environment environment,
+      Config config,
+      ProgramService programService) {
     this.environment = checkNotNull(environment);
     this.repository = checkNotNull(repository);
+    this.programService = checkNotNull(programService);
     this.secretSalt = checkNotNull(config).getString("api_secret_salt");
   }
 
-  public ApiKeyMutationResult createApiKey(DynamicForm form, CiviFormProfile profile) {
+  public ApiKeyMutationResult createApiKey(DynamicForm form, CiviFormProfile profile)
+      throws ProgramNotFoundException {
     if (environment.isProd() && secretSalt.equals("changeme")) {
       throw new RuntimeException("Must set api_secret_salt in production environment.");
     }
@@ -98,9 +106,7 @@ public class ApiKeyService {
 
     try {
       Instant expiration =
-          LocalDate.parse(maybeExpirationString.get(), DateTimeFormatter.ISO_DATE)
-              .atStartOfDay()
-              .toInstant(ZoneOffset.UTC);
+          DateConverter.parseIso8601DateToStartOfDateInstant(maybeExpirationString.get());
       apiKey.setExpiration(expiration);
     } catch (DateTimeParseException e) {
       return form.withError("expiration", "Expiration must be in the form YYYY-MM-DD.");
@@ -131,7 +137,9 @@ public class ApiKeyService {
   private static final Pattern GRANT_PROGRAM_READ_PATTERN =
       Pattern.compile("^grant-program-read\\[([\\w\\-]+)\\]$");
 
-  private DynamicForm resolveGrants(DynamicForm form, ApiKey apiKey) {
+  private DynamicForm resolveGrants(DynamicForm form, ApiKey apiKey)
+      throws ProgramNotFoundException {
+    ImmutableSet<String> programSlugs = programService.getAllProgramSlugs();
 
     for (String formDataKey : form.rawData().keySet()) {
       Matcher matcher = GRANT_PROGRAM_READ_PATTERN.matcher(formDataKey);
@@ -144,7 +152,10 @@ public class ApiKeyService {
 
       String programSlug = matcher.group(1);
 
-      // TODO: assert that the slug actually points to a program
+      if (!programSlugs.contains(programSlug)) {
+        throw new ProgramNotFoundException(programSlug);
+      }
+
       apiKey.getGrants().grantProgramPermission(programSlug, Permission.READ);
     }
 
